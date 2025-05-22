@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/15 09:56:54 by nabbas            #+#    #+#             */
-/*   Updated: 2025/05/15 10:28:56 by nabbas           ###   ########.fr       */
+/*   Created: 2025/05/15 09:00:00 by nabbas            #+#    #+#             */
+/*   Updated: 2025/05/22 15:10:40 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,13 @@
 # define PHILO_H
 
 # include <pthread.h>
+# include <semaphore.h> 
 # include <sys/time.h>
 # include <unistd.h>
 # include <stdlib.h>
 # include <stdio.h>
+
+/* ─────── structs ────────────────────────────────────────────────────────── */
 
 typedef struct s_rules	t_rules;
 
@@ -44,32 +47,45 @@ struct	s_rules
 	pthread_mutex_t	print_lock;
 	pthread_mutex_t	meal_lock;
 	pthread_mutex_t	*forks;
+	sem_t			waiter;        /* <── semaphore now lives here */
 	t_philo			*philos;
 	pthread_t		monitor;
 };
 
-/* utils_time.c */
-long	timestamp_ms(void);
-void	ft_usleep(long ms);
+/* ─────── utils_time.c ───────────────────────────────────────────────────── */
 
-/* utils_parse.c */
+long	timestamp_ms(void);
+void	ft_usleep(t_rules *r, long ms);
+
+/* ─────── utils_parse.c ──────────────────────────────────────────────────── */
+
 int		parse_args(int ac, char **av, t_rules *r);
 
-/* log.c */
+/* ─────── log.c ──────────────────────────────────────────────────────────── */
+
 void	log_state(t_philo *p, char *msg);
 int		is_dead(t_rules *r);
 int		all_fed(t_rules *r);
 
-/* init.c */
+/* ─────── init.c / cleanup.c ─────────────────────────────────────────────── */
+
 int		init_simulation(t_rules *r);
+void	clean_exit(t_rules *r, int code);
 
-/* routine.c */
+/* ─────── routine / monitor ──────────────────────────────────────────────── */
+
 void	*philo_routine(void *arg);
-
-/* monitor.c */
 void	*monitor_routine(void *arg);
 
-/* cleanup.c */
-void	clean_exit(t_rules *r, int code);
+/* ─────── waiter.c (bonus starvation guard) ──────────────────────────────── */
+
+
+
+static inline void	waiter_init(t_rules *r, int slots)
+						{ sem_init(&r->waiter, 0, slots); }
+static inline void	waiter_destroy(t_rules *r)
+						{ sem_destroy(&r->waiter); }
+static inline void	waiter_take(t_rules *r)   { sem_wait(&r->waiter); }
+static inline void	waiter_give(t_rules *r)   { sem_post(&r->waiter); }
 
 #endif
