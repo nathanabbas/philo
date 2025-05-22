@@ -6,7 +6,7 @@
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 09:58:21 by nabbas            #+#    #+#             */
-/*   Updated: 2025/05/15 09:58:23 by nabbas           ###   ########.fr       */
+/*   Updated: 2025/05/22 16:52:07 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,20 +33,22 @@ int	is_dead(t_rules *r)
 	return (status);
 }
 
-int	all_fed(t_rules *r)
+int	all_fed(t_rules *rules)
 {
 	int	i;
-	int	full;
 
-	if (r->meals_target < 0)
+	if (rules->meals_target < 0)
 		return (0);
+	pthread_mutex_lock(&rules->meal_lock);
 	i = 0;
-	full = 1;
-	while (i < r->n_philo)
+	while (i < rules->n_philo)
 	{
-		if (r->philos[i].meals_eaten < r->meals_target)
-			full = 0;
-		i++;
+		if (rules->philos[i++].meals_eaten < rules->meals_target)
+		{
+			pthread_mutex_unlock(&rules->meal_lock);
+			return (0);
+		}
 	}
-	return (full);
+	pthread_mutex_unlock(&rules->meal_lock);
+	return (1);
 }
