@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/15 09:00:00 by nabbas            #+#    #+#             */
-/*   Updated: 2025/05/22 15:10:40 by nabbas           ###   ########.fr       */
+/*   Created: 2025/05/22 15:31:12 by nabbas            #+#    #+#             */
+/*   Updated: 2025/05/22 15:31:47 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,11 @@
 # define PHILO_H
 
 # include <pthread.h>
-# include <semaphore.h> 
+# include <semaphore.h>
 # include <sys/time.h>
 # include <unistd.h>
 # include <stdlib.h>
 # include <stdio.h>
-
-/* ─────── structs ────────────────────────────────────────────────────────── */
 
 typedef struct s_rules	t_rules;
 
@@ -35,7 +33,7 @@ typedef struct s_philo
 	t_rules			*rules;
 }	t_philo;
 
-struct	s_rules
+struct s_rules
 {
 	int				n_philo;
 	long			t_die;
@@ -47,45 +45,29 @@ struct	s_rules
 	pthread_mutex_t	print_lock;
 	pthread_mutex_t	meal_lock;
 	pthread_mutex_t	*forks;
-	sem_t			waiter;        /* <── semaphore now lives here */
+	sem_t			waiter;
 	t_philo			*philos;
 	pthread_t		monitor;
 };
 
-/* ─────── utils_time.c ───────────────────────────────────────────────────── */
-
 long	timestamp_ms(void);
-void	ft_usleep(t_rules *r, long ms);
+void	ft_usleep(t_rules *rules, long ms);
 
-/* ─────── utils_parse.c ──────────────────────────────────────────────────── */
+int		parse_args(int ac, char **av, t_rules *rules);
 
-int		parse_args(int ac, char **av, t_rules *r);
+void	log_state(t_philo *philo, char *msg);
+int		is_dead(t_rules *rules);
+int		all_fed(t_rules *rules);
 
-/* ─────── log.c ──────────────────────────────────────────────────────────── */
-
-void	log_state(t_philo *p, char *msg);
-int		is_dead(t_rules *r);
-int		all_fed(t_rules *r);
-
-/* ─────── init.c / cleanup.c ─────────────────────────────────────────────── */
-
-int		init_simulation(t_rules *r);
-void	clean_exit(t_rules *r, int code);
-
-/* ─────── routine / monitor ──────────────────────────────────────────────── */
+int		init_simulation(t_rules *rules);
+void	clean_exit(t_rules *rules, int code);
 
 void	*philo_routine(void *arg);
 void	*monitor_routine(void *arg);
 
-/* ─────── waiter.c (bonus starvation guard) ──────────────────────────────── */
-
-
-
-static inline void	waiter_init(t_rules *r, int slots)
-						{ sem_init(&r->waiter, 0, slots); }
-static inline void	waiter_destroy(t_rules *r)
-						{ sem_destroy(&r->waiter); }
-static inline void	waiter_take(t_rules *r)   { sem_wait(&r->waiter); }
-static inline void	waiter_give(t_rules *r)   { sem_post(&r->waiter); }
+void	waiter_init(t_rules *rules, int slots);
+void	waiter_destroy(t_rules *rules);
+void	waiter_take(t_rules *rules);
+void	waiter_give(t_rules *rules);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 09:06:00 by nabbas            #+#    #+#             */
-/*   Updated: 2025/05/22 15:06:15 by nabbas           ###   ########.fr       */
+/*   Updated: 2025/05/22 15:32:42 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,9 @@
 
 static void	destroy_mutexes(t_rules *r)
 {
-	int	i = 0;
+	int	i;
 
+	i = 0;
 	pthread_mutex_destroy(&r->print_lock);
 	pthread_mutex_destroy(&r->meal_lock);
 	while (i < r->n_philo)
@@ -29,8 +30,9 @@ static void	destroy_mutexes(t_rules *r)
 
 void	clean_exit(t_rules *r, int code)
 {
-	int	i = 0;
+	int	i;
 
+	i = 0;
 	while (i < r->n_philo)
 		pthread_join(r->philos[i++].thread, NULL);
 	pthread_join(r->monitor, NULL);

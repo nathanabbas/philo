@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils_parse.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/22 15:36:12 by nabbas            #+#    #+#             */
+/*   Updated: 2025/05/22 15:36:24 by nabbas           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 static long	ft_atol(char *s)
@@ -28,7 +40,6 @@ static int	fill_rules(char **av, t_rules *r)
 	r->meals_target = -1;
 	if (av[5])
 		r->meals_target = (int)ft_atol(av[5]);
-	/* every timing must be strictly positive and atol must not have failed */
 	if (r->n_philo < 1 || r->t_die <= 0 || r->t_eat <= 0 || r->t_sleep <= 0
 		|| r->t_die == -1 || r->t_eat == -1 || r->t_sleep == -1)
 		return (1);
