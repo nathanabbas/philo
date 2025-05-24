@@ -5,77 +5,66 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/22 17:00:25 by nabbas            #+#    #+#             */
-/*   Updated: 2025/05/22 17:00:28 by nabbas           ###   ########.fr       */
+/*   Created: 2025/05/24 13:56:36 by nabbas            #+#    #+#             */
+/*   Updated: 2025/05/24 14:07:25 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	take_two(t_philo *p)
-{
-	waiter_take(p->rules);
-	pthread_mutex_lock(p->left);
-	log_state(p, "has taken a fork");
-	pthread_mutex_lock(p->right);
-	log_state(p, "has taken a fork");
-}
-
-static void	do_eat(t_philo *p)
-{
-	pthread_mutex_lock(&p->rules->meal_lock);
-	p->last_meal = timestamp_ms();
-	pthread_mutex_unlock(&p->rules->meal_lock);
-	log_state(p, "is eating");
-	ft_usleep(p->rules, p->rules->t_eat);
-	pthread_mutex_unlock(p->left);
-	pthread_mutex_unlock(p->right);
-	waiter_give(p->rules);
-	pthread_mutex_lock(&p->rules->meal_lock);
-	p->meals_eaten++;
-	pthread_mutex_unlock(&p->rules->meal_lock);
-}
-
-static void	*single_philo(t_philo *p)
-{
-	if (all_fed(p->rules) || is_dead(p->rules))
-		return (NULL);
-	pthread_mutex_lock(p->left);
-	log_state(p, "has taken a fork");
-	ft_usleep(p->rules, p->rules->t_die);
-	pthread_mutex_unlock(p->left);
-	return (NULL);
-}
-
-static void	philo_cycle(t_philo *p)
-{
-	if (all_fed(p->rules) || is_dead(p->rules))
-		return ;
-	take_two(p);
-	if (all_fed(p->rules) || is_dead(p->rules))
-		return ;
-	do_eat(p);
-	if (all_fed(p->rules) || is_dead(p->rules))
-		return ;
-	log_state(p, "is sleeping");
-	ft_usleep(p->rules, p->rules->t_sleep);
-	if (all_fed(p->rules) || is_dead(p->rules))
-		return ;
-	log_state(p, "is thinking");
-	if (p->rules->n_philo % 2 == 1)
-		ft_usleep(p->rules, p->rules->t_eat);
-}
-
 void	*philo_routine(void *arg)
 {
-	t_philo	*p;
+	t_philo *p = arg;
+	t_rules *r = p->rules;
+	int      last_meal;
 
-	p = (t_philo *)arg;
-	if (p->rules->n_philo == 1)
-		return (single_philo(p));
-	if (p->id % 2 == 0)
-		usleep(150);
-	while (!all_fed(p->rules) && !is_dead(p->rules))
-		philo_cycle(p);
+	if (r->n_philo == 1)
+	{
+		pthread_mutex_lock(p->left);
+		log_state(p, "has taken a fork");
+		ft_usleep(r, r->t_die);
+		pthread_mutex_unlock(p->left);
+		return (NULL);
+	}
+	if (p->id % 2 == 1)
+		usleep(100);
+
+	while (!is_dead(r) && !all_fed(r))
+	{
+		/* take forks */
+		pthread_mutex_lock(p->left);
+		log_state(p, "has taken a fork");
+		pthread_mutex_lock(p->right);
+		log_state(p, "has taken a fork");
+
+		/* eat */
+		pthread_mutex_lock(&r->meal_lock);
+		p->last_meal = timestamp_ms();
+		pthread_mutex_unlock(&r->meal_lock);
+		log_state(p, "is eating");
+		ft_usleep(r, r->t_eat);
+
+		/* update meal count */
+		pthread_mutex_lock(&r->meal_lock);
+		p->meals_eaten++;
+		last_meal = (r->meals_target > 0 &&
+		             p->meals_eaten == r->meals_target);
+		if (last_meal)
+			r->fed_count++;              /* NEW */
+		pthread_mutex_unlock(&r->meal_lock);
+
+		/* put forks back */
+		pthread_mutex_unlock(p->left);
+		pthread_mutex_unlock(p->right);
+
+		/* if everyone is fed now, leave immediately */
+		if (all_fed(r))
+			break;
+
+		/* normal sleep / think cycle */
+		log_state(p, "is sleeping");
+		ft_usleep(r, r->t_sleep);
+		log_state(p, "is thinking");
+	}
 	return (NULL);
 }

@@ -1,59 +1,24 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/05/22 16:41:24 by nabbas            #+#    #+#              #
-#    Updated: 2025/05/22 16:41:25 by nabbas           ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/05/15 09:00:00 by nabbas            #+#    #+#              #
-#   Updated: 2025/05/22 15:20:00 by nabbas           ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 NAME    = philo
-
-CC      = cc
-CFLAGS  = -Wall -Wextra -Werror -pthread
-INC     = -Iincludes
-
+CC      = gcc
+CFLAGS  = -Wall -Wextra -Werror -pthread -Iincludes
 SRC_DIR = src
-SRCS    = $(SRC_DIR)/main.c \
-          $(SRC_DIR)/init.c \
-          $(SRC_DIR)/routine.c \
-          $(SRC_DIR)/monitor.c \
-          $(SRC_DIR)/log.c \
-          $(SRC_DIR)/utils_time.c \
-          $(SRC_DIR)/utils_parse.c \
-          $(SRC_DIR)/cleanup.c \
-          $(SRC_DIR)/waiter.c
-
-OBJS    = $(SRCS:.c=.o)
+SRCS    := $(wildcard $(SRC_DIR)/*.c)
+OBJS    := $(patsubst $(SRC_DIR)/%.c,$(SRC_DIR)/%.o,$(SRCS))
+RM      = rm -f
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(INC) $(OBJS) -o $(NAME)
+	$(CC) $(CFLAGS) -o $@ $(OBJS)
 
-%.o: %.c
-	$(CC) $(CFLAGS) $(INC) -c $< -o $@
+$(SRC_DIR)/%.o: $(SRC_DIR)/%.c includes/philo.h
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS)
+	$(RM) $(OBJS)
 
 fclean: clean
-	rm -f $(NAME)
+	$(RM) $(NAME)
 
 re: fclean all
 
