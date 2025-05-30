@@ -1,24 +1,26 @@
-NAME    = philo
-CC      = gcc
-CFLAGS  = -Wall -Wextra -Werror -pthread -Iincludes
-SRC_DIR = src
-SRCS    := $(wildcard $(SRC_DIR)/*.c)
-OBJS    := $(patsubst $(SRC_DIR)/%.c,$(SRC_DIR)/%.o,$(SRCS))
-RM      = rm -f
+NAME		= philo
+CC			= cc
+CFLAGS		= -Wall -Wextra -Werror
+THREADS		= -pthread
+INC			= -Iinc
+SRCDIR		= src
+HDRS		= inc/philo.h
+SRC			= $(wildcard $(SRCDIR)/*.c)
+OBJ			= $(SRC:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $(OBJS)
+$(NAME): $(OBJ) $(HDRS)
+	$(CC) $(CFLAGS) $(OBJ) $(THREADS) -o $(NAME)
 
-$(SRC_DIR)/%.o: $(SRC_DIR)/%.c includes/philo.h
-	$(CC) $(CFLAGS) -c $< -o $@
+%.o: %.c $(HDRS)
+	$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 clean:
-	$(RM) $(OBJS)
+	rm -f $(OBJ)
 
 fclean: clean
-	$(RM) $(NAME)
+	rm -f $(NAME)
 
 re: fclean all
 

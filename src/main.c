@@ -5,53 +5,63 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/24 12:40:01 by nabbas            #+#    #+#             */
-/*   Updated: 2025/05/24 13:53:06 by nabbas           ###   ########.fr       */
+/*   Created: 2025/05/26 12:28:59 by nabbas            #+#    #+#             */
+/*   Updated: 2025/05/30 19:29:24 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static int start_threads(t_rules *r)
+/* ------------------------------------------------------------------ */
+/*  Handle the single-philosopher edge case: no threads or monitor      */
+/* ------------------------------------------------------------------ */
+static int	one_philo_case(t_rules *r)
 {
-    int i;
+	long	ts;
 
-    r->start_ts = timestamp_ms();
-    i = 0;
-    while (i < r->n_philo)
-    {
-        r->philos[i].last_meal = r->start_ts;
-        if (pthread_create(&r->philos[i].thread,
-                           NULL,
-                           philo_routine,
-                           &r->philos[i]))
-            return (1);
-        i++;
-    }
-    if (pthread_create(&r->monitor, NULL, monitor_routine, r))
-        return (1);
-    return (0);
+	/* take the only fork at t=0 */
+	ts = 0;
+	printf("%ld %d has taken a fork\n", ts, 1);
+
+	/* sleep until death time */
+	ft_usleep(r->t_die);
+
+	/* print death at exact t_die */
+	ts = r->t_die;
+	printf("%ld %d died\n", ts, 1);
+
+	return (0);
 }
 
-int main(int ac, char **av)
+/* ------------------------------------------------------------------ */
+/*  Wait for simulation end: monitor then join all philosopher threads */
+/* ------------------------------------------------------------------ */
+static void	wait_end(t_rules *r)
 {
-    t_rules r;
+	int	i;
 
-    if (parse_args(ac, av, &r))
-    {
-        printf("Error: bad arguments\n");
-        return (1);
-    }
-    if (init_simulation(&r))
-    {
-        printf("Error: init failed\n");
-        return (1);
-    }
-    if (start_threads(&r))
-    {
-        printf("Error: thread failure\n");
-        return (1);
-    }
-    clean_exit(&r, 0);
-    return (0);
+	monitor(r);
+	i = -1;
+	while (++i < r->n_philo)
+		pthread_join(r->philos[i].thread, NULL);
 }
+
+int	main(int ac, char **av)
+{
+	t_rules	r;
+
+	if (!parse_args(ac, av, &r))
+		return (printf("invalid argument\n"), 1);
+
+	/* single philosopher: infinite eating then death */
+	if (r.n_philo == 1)
+		return (one_philo_case(&r));
+
+	if (!init_sim(&r))
+		return (printf("Error: init failed\n"), 1);
+
+	wait_end(&r);
+	free_all(&r);
+	return (0);
+}
+

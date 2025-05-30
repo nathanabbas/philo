@@ -1,27 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils_time.c                                       :+:      :+:    :+:   */
+/*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/24 12:38:46 by nabbas            #+#    #+#             */
-/*   Updated: 2025/05/24 13:53:57 by nabbas           ###   ########.fr       */
+/*   Created: 2025/05/26 12:27:58 by nabbas            #+#    #+#             */
+/*   Updated: 2025/05/26 13:05:13 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-long timestamp_ms(void)
+long	get_time_ms(void)
 {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
-void ft_usleep(t_rules *r, long ms)
+void	ft_usleep(long ms)
 {
-    long target = timestamp_ms() + ms;
-    while (timestamp_ms() < target && !is_dead(r) && !all_fed(r))
-        usleep(500);
+	long	start;
+
+	start = get_time_ms();
+	while (get_time_ms() - start < ms)
+		usleep(100);
 }

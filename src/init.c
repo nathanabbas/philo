@@ -5,61 +5,63 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/24 13:38:06 by nabbas            #+#    #+#             */
-/*   Updated: 2025/05/24 13:54:17 by nabbas           ###   ########.fr       */
+/*   Created: 2025/05/26 12:27:23 by nabbas            #+#    #+#             */
+/*   Updated: 2025/05/26 12:27:25 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static int  create_mutexes(t_rules *r)
+static void	set_philo(t_rules *r, int i)
 {
-    int i;
+	t_philo	*p;
 
-    if (pthread_mutex_init(&r->print_lock, NULL))
-        return (1);
-    if (pthread_mutex_init(&r->meal_lock, NULL))
-        return (1);
-    r->forks = malloc(sizeof(pthread_mutex_t) * r->n_philo);
-    if (!r->forks)
-        return (1);
-    i = 0;
-    while (i < r->n_philo)
-        if (pthread_mutex_init(&r->forks[i++], NULL))
-            return (1);
-    return (0);
+	p = &r->philos[i];
+	p->id = i + 1;
+	p->last_meal = r->start;
+	p->meals = 0;
+	p->l_fork = &r->forks[i];
+	p->r_fork = &r->forks[(i + 1) % r->n_philo];
+	pthread_mutex_init(&p->lock, NULL);
+	p->rules = r;
 }
 
-static void assign_forks(t_rules *r)
+static bool	create_threads(t_rules *r)
 {
-    int i = 0;
+	int	i;
 
-    while (i < r->n_philo)
-    {
-        r->philos[i].left  = &r->forks[i];
-        r->philos[i].right = &r->forks[(i + 1) % r->n_philo];
-        i++;
-    }
+	i = 0;
+	while (i < r->n_philo)
+	{
+		if (pthread_create(&r->philos[i].thread, NULL,
+				routine, &r->philos[i]))
+			return (false);
+		i += 2;
+		if (i >= r->n_philo && i % 2 == 0)
+			i = 1;
+	}
+	return (true);
 }
 
-int init_simulation(t_rules *r)
+bool	init_sim(t_rules *r)
 {
-    int i;
+	int	i;
 
-    if (create_mutexes(r))
-        return (1);
-    r->philos = malloc(sizeof(t_philo) * r->n_philo);
-    if (!r->philos)
-        return (1);
-    i = 0;
-    while (i < r->n_philo)
-    {
-        r->philos[i].id          = i + 1;
-        r->philos[i].meals_eaten = 0;
-        r->philos[i].last_meal   = 0;
-        r->philos[i].rules       = r;
-        i++;
-    }
-    assign_forks(r);
-    return (0);
+	r->start = get_time_ms();
+	r->stop = false;
+	pthread_mutex_init(&r->print, NULL);
+	pthread_mutex_init(&r->sim_lock, NULL);
+	r->forks = malloc(sizeof(pthread_mutex_t) * r->n_philo);
+	r->philos = malloc(sizeof(t_philo) * r->n_philo);
+	if (!r->forks || !r->philos)
+		return (false);
+	i = -1;
+	while (++i < r->n_philo)
+		pthread_mutex_init(&r->forks[i], NULL);
+	i = -1;
+	while (++i < r->n_philo)
+		set_philo(r, i);
+	if (!create_threads(r))
+		return (false);
+	return (true);
 }

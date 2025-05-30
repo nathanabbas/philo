@@ -1,29 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cleanup.c                                          :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/26 12:44:01 by nabbas            #+#    #+#             */
-/*   Updated: 2025/05/26 12:44:06 by nabbas           ###   ########.fr       */
+/*   Created: 2025/05/26 12:28:21 by nabbas            #+#    #+#             */
+/*   Updated: 2025/05/26 12:28:22 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	free_all(t_rules *r)
+int	ft_atoi_pos(const char *s, bool *ok)
 {
-	int	i;
+	long	res;
 
-	i = -1;
-	while (++i < r->n_philo)
+	res = 0;
+	while (*s == ' ' || (*s >= 9 && *s <= 13))
+		s++;
+	if (*s == '+')
+		s++;
+	if (*s < '0' || *s > '9')
+		return (*ok = false, 0);
+	while (*s >= '0' && *s <= '9')
 	{
-		pthread_mutex_destroy(&r->forks[i]);
-		pthread_mutex_destroy(&r->philos[i].lock);
+		res = res * 10 + (*s - '0');
+		if (res > INT_MAX)
+			return (*ok = false, 0);
+		s++;
 	}
-	pthread_mutex_destroy(&r->print);
-	pthread_mutex_destroy(&r->sim_lock);
-	free(r->forks);
-	free(r->philos);
+	if (*s != '\0')
+		return (*ok = false, 0);
+	return ((int)res);
 }

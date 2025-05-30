@@ -1,29 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cleanup.c                                          :+:      :+:    :+:   */
+/*   print.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/26 12:44:01 by nabbas            #+#    #+#             */
-/*   Updated: 2025/05/26 12:44:06 by nabbas           ###   ########.fr       */
+/*   Created: 2025/05/26 12:28:09 by nabbas            #+#    #+#             */
+/*   Updated: 2025/05/26 12:28:11 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	free_all(t_rules *r)
+void	log_state(t_philo *p, const char *msg, bool death)
 {
-	int	i;
+	long	ts;
 
-	i = -1;
-	while (++i < r->n_philo)
+	pthread_mutex_lock(&p->rules->print);
+	pthread_mutex_lock(&p->rules->sim_lock);
+	if (!p->rules->stop || death)
 	{
-		pthread_mutex_destroy(&r->forks[i]);
-		pthread_mutex_destroy(&r->philos[i].lock);
+		ts = get_time_ms() - p->rules->start;
+		printf("%ld %d %s\n", ts, p->id, msg);
 	}
-	pthread_mutex_destroy(&r->print);
-	pthread_mutex_destroy(&r->sim_lock);
-	free(r->forks);
-	free(r->philos);
+	pthread_mutex_unlock(&p->rules->sim_lock);
+	pthread_mutex_unlock(&p->rules->print);
 }

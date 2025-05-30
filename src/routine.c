@@ -5,66 +5,91 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/24 13:56:36 by nabbas            #+#    #+#             */
-/*   Updated: 2025/05/24 14:07:25 by nabbas           ###   ########.fr       */
+/*   Created: 2025/05/26 12:27:36 by nabbas            #+#    #+#             */
+/*   Updated: 2025/05/26 13:40:06 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	*philo_routine(void *arg)
+/*
+** eat()
+** A normal philosopher takes two different forks, eats, and releases them.
+*/
+static void	eat(t_philo *p)
 {
-	t_philo *p = arg;
-	t_rules *r = p->rules;
-	int      last_meal;
+	pthread_mutex_lock(p->l_fork);
+	log_state(p, "has taken a fork", false);
+	pthread_mutex_lock(p->r_fork);
+	log_state(p, "has taken a fork", false);
+	pthread_mutex_lock(&p->lock);
+	p->last_meal = get_time_ms();
+	pthread_mutex_unlock(&p->lock);
+	log_state(p, "is eating", false);
+	ft_usleep(p->rules->t_eat);
+	pthread_mutex_lock(&p->lock);
+	p->meals++;
+	pthread_mutex_unlock(&p->lock);
+	pthread_mutex_unlock(p->r_fork);
+	pthread_mutex_unlock(p->l_fork);
+}
 
-	if (r->n_philo == 1)
-	{
-		pthread_mutex_lock(p->left);
-		log_state(p, "has taken a fork");
-		ft_usleep(r, r->t_die);
-		pthread_mutex_unlock(p->left);
-		return (NULL);
-	}
-	if (p->id % 2 == 1)
-		usleep(100);
+/*
+** routine() — thread entry point
+** Includes a dedicated branch for the 1-philosopher case to avoid dead-lock.
+*/
+/* ------------------------------------------------------------------ */
+/*  solo_routine() – 1-philosopher case                               */
+/* ------------------------------------------------------------------ */
 
-	while (!is_dead(r) && !all_fed(r))
-	{
-		/* take forks */
-		pthread_mutex_lock(p->left);
-		log_state(p, "has taken a fork");
-		pthread_mutex_lock(p->right);
-		log_state(p, "has taken a fork");
 
-		/* eat */
-		pthread_mutex_lock(&r->meal_lock);
-		p->last_meal = timestamp_ms();
-		pthread_mutex_unlock(&r->meal_lock);
-		log_state(p, "is eating");
-		ft_usleep(r, r->t_eat);
+static void *solo_routine(t_philo *p)
+{
+    /* take the single fork */
+    pthread_mutex_lock(p->l_fork);
 
-		/* update meal count */
-		pthread_mutex_lock(&r->meal_lock);
-		p->meals_eaten++;
-		last_meal = (r->meals_target > 0 &&
-		             p->meals_eaten == r->meals_target);
-		if (last_meal)
-			r->fed_count++;              /* NEW */
-		pthread_mutex_unlock(&r->meal_lock);
+    /* print “0 X has taken a fork” under print-lock */
+    pthread_mutex_lock(&p->rules->print);
+    printf("0 %d has taken a fork\n", p->id);
+    pthread_mutex_unlock(&p->rules->print);
 
-		/* put forks back */
-		pthread_mutex_unlock(p->left);
-		pthread_mutex_unlock(p->right);
+    /* sleep exactly time_to_die */
+    ft_usleep(p->rules->t_die);
 
-		/* if everyone is fed now, leave immediately */
-		if (all_fed(r))
-			break;
+    /* mark stop under sim_lock so monitor quits silently */
+    pthread_mutex_lock(&p->rules->sim_lock);
+    p->rules->stop = true;
+    pthread_mutex_unlock(&p->rules->sim_lock);
 
-		/* normal sleep / think cycle */
-		log_state(p, "is sleeping");
-		ft_usleep(r, r->t_sleep);
-		log_state(p, "is thinking");
-	}
-	return (NULL);
+    /* print “200 X died” under the same print-lock */
+    pthread_mutex_lock(&p->rules->print);
+    printf("%d %d died\n", p->rules->t_die, p->id);
+    pthread_mutex_unlock(&p->rules->print);
+
+    pthread_mutex_unlock(p->l_fork);
+    return (NULL);
+}
+
+
+void	*routine(void *arg)
+{
+	t_philo	*p;
+
+	p = arg;
+	if (p->rules->n_philo == 1)
+		return (solo_routine(p));
+    if (p->id % 2 == 0)
+        usleep(1000);
+    while (true)
+    {
+        pthread_mutex_lock(&p->rules->sim_lock);
+        if (p->rules->stop)
+            return (pthread_mutex_unlock(&p->rules->sim_lock), NULL);
+        pthread_mutex_unlock(&p->rules->sim_lock);
+        eat(p);
+        log_state(p, "is sleeping", false);
+        ft_usleep(p->rules->t_sleep);
+        log_state(p, "is thinking", false);
+    }
+    return (NULL);
 }
