@@ -6,36 +6,24 @@
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 12:28:59 by nabbas            #+#    #+#             */
-/*   Updated: 2025/05/30 19:29:24 by nabbas           ###   ########.fr       */
+/*   Updated: 2025/06/19 19:32:30 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/* ------------------------------------------------------------------ */
-/*  Handle the single-philosopher edge case: no threads or monitor      */
-/* ------------------------------------------------------------------ */
 static int	one_philo_case(t_rules *r)
 {
 	long	ts;
 
-	/* take the only fork at t=0 */
 	ts = 0;
 	printf("%ld %d has taken a fork\n", ts, 1);
-
-	/* sleep until death time */
 	ft_usleep(r->t_die);
-
-	/* print death at exact t_die */
 	ts = r->t_die;
 	printf("%ld %d died\n", ts, 1);
-
 	return (0);
 }
 
-/* ------------------------------------------------------------------ */
-/*  Wait for simulation end: monitor then join all philosopher threads */
-/* ------------------------------------------------------------------ */
 static void	wait_end(t_rules *r)
 {
 	int	i;
@@ -52,16 +40,11 @@ int	main(int ac, char **av)
 
 	if (!parse_args(ac, av, &r))
 		return (printf("invalid argument\n"), 1);
-
-	/* single philosopher: infinite eating then death */
 	if (r.n_philo == 1)
 		return (one_philo_case(&r));
-
 	if (!init_sim(&r))
 		return (printf("Error: init failed\n"), 1);
-
 	wait_end(&r);
 	free_all(&r);
 	return (0);
 }
-

@@ -6,7 +6,7 @@
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 12:26:51 by nabbas            #+#    #+#             */
-/*   Updated: 2025/05/26 13:02:33 by nabbas           ###   ########.fr       */
+/*   Updated: 2025/06/19 19:30:04 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,4 @@ int		ft_atoi_pos(const char *s, bool *ok);
 /* cleanup.c */
 void	free_all(t_rules *r);
 
-
 #endif
-
