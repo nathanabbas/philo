@@ -6,7 +6,7 @@
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 12:27:36 by nabbas            #+#    #+#             */
-/*   Updated: 2025/05/26 13:40:06 by nabbas           ###   ########.fr       */
+/*   Updated: 2025/06/19 14:05:27 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,22 +16,35 @@
 ** eat()
 ** A normal philosopher takes two different forks, eats, and releases them.
 */
-static void	eat(t_philo *p)
+static void eat(t_philo *p)
 {
-	pthread_mutex_lock(p->l_fork);
+	pthread_mutex_t *first = p->l_fork;
+	pthread_mutex_t *second = p->r_fork;
+	if (p->id % 2 == 0) // prevent deadlocks by consistent fork order
+	{
+		first = p->r_fork;
+		second = p->l_fork;
+	}
+
+	pthread_mutex_lock(first);
 	log_state(p, "has taken a fork", false);
-	pthread_mutex_lock(p->r_fork);
+
+	pthread_mutex_lock(second);
 	log_state(p, "has taken a fork", false);
+
 	pthread_mutex_lock(&p->lock);
 	p->last_meal = get_time_ms();
 	pthread_mutex_unlock(&p->lock);
+
 	log_state(p, "is eating", false);
 	ft_usleep(p->rules->t_eat);
+
 	pthread_mutex_lock(&p->lock);
 	p->meals++;
 	pthread_mutex_unlock(&p->lock);
-	pthread_mutex_unlock(p->r_fork);
-	pthread_mutex_unlock(p->l_fork);
+
+	pthread_mutex_unlock(second);
+	pthread_mutex_unlock(first);
 }
 
 /*
@@ -70,7 +83,6 @@ static void *solo_routine(t_philo *p)
     return (NULL);
 }
 
-
 void	*routine(void *arg)
 {
 	t_philo	*p;
@@ -84,7 +96,10 @@ void	*routine(void *arg)
     {
         pthread_mutex_lock(&p->rules->sim_lock);
         if (p->rules->stop)
-            return (pthread_mutex_unlock(&p->rules->sim_lock), NULL);
+        {
+            pthread_mutex_unlock(&p->rules->sim_lock);
+            break;
+        }
         pthread_mutex_unlock(&p->rules->sim_lock);
         eat(p);
         log_state(p, "is sleeping", false);

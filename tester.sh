@@ -7,13 +7,13 @@
 ./philo 4 410 200 200
 ./philo 4 310 200 200
 ./philo 4 500 200 1.2
-./philo 4 0 200 200 # Should output invalid argument
+./philo 4 0 200 200 
 ./philo 4 -500 200 200
-./philo 4 500 200 2147483647 # Infinite loop
+./philo 4 500 200 2147483647 //
 ./philo 4 2147483647 200 200
 ./philo 4 214748364732 200 200
-./philo 4 200 210 200 # Not sure about this case
-./philo 5 800 200 150 # Wrong output
+./philo 4 200 210 200 
+./philo 5 800 200 150 
 
 # Expected Result
 
