@@ -5,7 +5,18 @@ THREADS		= -pthread
 INC			= -Iinc
 SRCDIR		= src
 HDRS		= inc/philo.h
-SRC			= $(wildcard $(SRCDIR)/*.c)
+
+SRC			= \
+			$(SRCDIR)/args.c \
+			$(SRCDIR)/cleanup.c \
+			$(SRCDIR)/init.c \
+			$(SRCDIR)/main.c \
+			$(SRCDIR)/monitor.c \
+			$(SRCDIR)/print.c \
+			$(SRCDIR)/routine.c \
+			$(SRCDIR)/time.c \
+			$(SRCDIR)/utils.c
+
 OBJ			= $(SRC:.c=.o)
 
 all: $(NAME)
@@ -25,3 +36,4 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
+
