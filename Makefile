@@ -6,16 +6,18 @@ INC			= -Iinc
 SRCDIR		= src
 HDRS		= inc/philo.h
 
-SRC			= \
-			$(SRCDIR)/args.c \
-			$(SRCDIR)/cleanup.c \
-			$(SRCDIR)/init.c \
-			$(SRCDIR)/main.c \
-			$(SRCDIR)/monitor.c \
-			$(SRCDIR)/print.c \
-			$(SRCDIR)/routine.c \
-			$(SRCDIR)/time.c \
-			$(SRCDIR)/utils.c
+SRCDIR  = src
+SRC     = $(SRCDIR)/args.c \
+          $(SRCDIR)/cleanup.c \
+          $(SRCDIR)/init.c \
+          $(SRCDIR)/main.c \
+          $(SRCDIR)/monitor.c \
+          $(SRCDIR)/print.c \
+          $(SRCDIR)/routine.c \
+          $(SRCDIR)/actions.c \
+          $(SRCDIR)/time.c \
+          $(SRCDIR)/utils.c
+
 
 OBJ			= $(SRC:.c=.o)
 

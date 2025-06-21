@@ -6,7 +6,7 @@
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 12:26:51 by nabbas            #+#    #+#             */
-/*   Updated: 2025/06/19 19:30:04 by nabbas           ###   ########.fr       */
+/*   Updated: 2025/06/21 13:10:50 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,10 @@ struct s_rules
 bool	parse_args(int ac, char **av, t_rules *r);
 /* init.c */
 bool	init_sim(t_rules *r);
+/* actions.c */
+void	smart_sleep(long dur, t_rules *r);
+void	think(t_philo *p);
+void	eat(t_philo *p);
 /* routine.c */
 void	*routine(void *arg);
 /* monitor.c */
