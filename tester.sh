@@ -5,14 +5,14 @@
 ./philo 5 800 200 200 # No philosopher dies.
 ./philo 5 800 200 200 7 # The program stops when each philosopher has eaten 7 times.
 ./philo 4 410 200 200 # No philosopher dies.
-./philo 4 310 200 200 # A philosopher dies.
+./philo 4 310 200 200 # A philosopher dies. -bonus
 ./philo 4 500 200 1.2 # Invalid argument.
 ./philo 4 0 200 200  # Invalid argument.
 ./philo 4 -500 200 200 # Invalid argument.
-./philo 4 500 200 2147483647   # A philosopher dies after 500 ms
+./philo 4 500 200 2147483647   # A philosopher dies after 500 ms -
 ./philo 4 2147483647 200 200 # No philosopher dies.
 ./philo 4 214748364732 200 200 # Invalid argument.
-./philo 4 200 210 200  # A philosopher dies, it should display the death before 210 ms.
+./philo 4 200 210 200  # A philosopher dies, it should display the death before 210 ms. -
 ./philo 5 800 200 150 # No philosopher dies.
 
 #1-philosopher ate seven times in the “must-eat = 7” test.
