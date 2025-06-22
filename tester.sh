@@ -1,10 +1,10 @@
 # Example
 
 ./philo 1 200 200 200 # Philosopher 1 takes a fork and dies after 200 ms.
-./philo 2 800 200 200 # No philosopher dies.
+./philo 2 800 200 200 # No philosopher dies.(leaks(bonus))
 ./philo 5 800 200 200 # No philosopher dies.
 ./philo 5 800 200 200 7 # The program stops when each philosopher has eaten 7 times.
-./philo 4 410 200 200 # No philosopher dies.
+./philo 4 410 200 200 # No philosopher dies.(helgrind-leaks(bonus))
 ./philo 4 310 200 200 # A philosopher dies. -bonus
 ./philo 4 500 200 1.2 # Invalid argument.
 ./philo 4 0 200 200  # Invalid argument.
