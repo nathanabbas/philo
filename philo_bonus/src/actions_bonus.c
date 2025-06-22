@@ -6,7 +6,7 @@
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 15:40:57 by nabbas            #+#    #+#             */
-/*   Updated: 2025/06/22 16:14:16 by nabbas           ###   ########.fr       */
+/*   Updated: 2025/06/22 16:56:24 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,7 @@ void	think(t_philo *p)
 	smart_sleep(window, p->rules);
 }
 
-
-
-void sleep_philo(t_philo *p)
+void	sleep_philo(t_philo *p)
 {
 	log_state(p, "is sleeping", 0);
 	smart_sleep(p->rules->t_sleep, p->rules);
@@ -41,18 +39,12 @@ void	eat(t_philo *p)
 	log_state(p, "has taken a fork", 0);
 	sem_wait(p->rules->forks);
 	log_state(p, "has taken a fork", 0);
-
 	sem_wait(p->lock);
-	p->last_meal = get_time_ms(); // <- BEFORE sleeping
-	sem_post(p->lock);
-
-	log_state(p, "is eating", 0);
-	smart_sleep(p->rules->t_eat, p->rules);
-
-	sem_wait(p->lock);
+	p->last_meal = get_time_ms();
 	p->meals++;
 	sem_post(p->lock);
-
+	log_state(p, "is eating", 0);
+	smart_sleep(p->rules->t_eat, p->rules);
 	sem_post(p->rules->forks);
 	sem_post(p->rules->forks);
 }

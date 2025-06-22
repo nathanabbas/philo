@@ -6,7 +6,7 @@
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 15:50:15 by nabbas            #+#    #+#             */
-/*   Updated: 2025/06/22 15:53:00 by nabbas           ###   ########.fr       */
+/*   Updated: 2025/06/22 16:55:31 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # include <limits.h>
 # include <stdbool.h>
 
-typedef struct s_rules t_rules;
+typedef struct s_rules	t_rules;
 
 typedef struct s_philo
 {
@@ -47,12 +47,10 @@ struct s_rules
 	int		must_eat;
 	long	start;
 	int		stop_flag;
-
 	sem_t	*forks;
 	sem_t	*print;
 	sem_t	*stop;
 	sem_t	*slots;
-
 	t_philo	*philos;
 	pid_t	*pids;
 };
@@ -91,4 +89,3 @@ void	*routine(void *arg);
 bool	init_sim(t_rules *r);
 
 #endif
-

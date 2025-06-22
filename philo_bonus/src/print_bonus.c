@@ -6,15 +6,15 @@
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 15:42:07 by nabbas            #+#    #+#             */
-/*   Updated: 2025/06/22 15:42:08 by nabbas           ###   ########.fr       */
+/*   Updated: 2025/06/22 16:59:57 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-void log_state(t_philo *p, char *msg, int death)
+void	log_state(t_philo *p, char *msg, int death)
 {
-	long ts;
+	long	ts;
 
 	sem_wait(p->rules->stop);
 	if (!p->rules->stop_flag || death)

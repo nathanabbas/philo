@@ -6,17 +6,18 @@
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 15:42:22 by nabbas            #+#    #+#             */
-/*   Updated: 2025/06/22 15:42:24 by nabbas           ###   ########.fr       */
+/*   Updated: 2025/06/22 16:57:24 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-void free_all(t_rules *r)
+void	free_all(t_rules *r)
 {
-	int i = -1;
-	char name[20];
+	int		i;
+	char	name[20];
 
+	i = -1;
 	while (++i < r->n_philo)
 	{
 		build_sem_name(name, i);

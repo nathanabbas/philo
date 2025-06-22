@@ -6,20 +6,22 @@
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 15:40:36 by nabbas            #+#    #+#             */
-/*   Updated: 2025/06/22 15:52:25 by nabbas           ###   ########.fr       */
+/*   Updated: 2025/06/22 16:58:33 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-static void set_philo(t_rules *r, int i)
+static void	set_philo(t_rules *r, int i)
 {
-	t_philo *p = &r->philos[i];
+	t_philo	*p;
+	char	name[20];
+
+	p = &r->philos[i];
 	p->id = i + 1;
 	p->meals = 0;
 	p->rules = r;
 	p->last_meal = r->start;
-	char name[20];
 	build_sem_name(name, i);
 	sem_unlink(name);
 	p->lock = sem_open(name, O_CREAT, 0644, 1);

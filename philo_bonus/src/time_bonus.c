@@ -6,7 +6,7 @@
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 15:44:12 by nabbas            #+#    #+#             */
-/*   Updated: 2025/06/22 16:11:02 by nabbas           ###   ########.fr       */
+/*   Updated: 2025/06/22 17:00:42 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,8 @@ void	ft_usleep(long ms)
 
 	start = get_time_ms();
 	while (get_time_ms() - start < ms)
-		usleep(250); // tighter interval
+		usleep(100);
 }
-
 
 void	smart_sleep(long dur, t_rules *r)
 {
@@ -47,4 +46,3 @@ void	smart_sleep(long dur, t_rules *r)
 		sem_post(r->stop);
 	}
 }
-
