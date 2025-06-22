@@ -5,42 +5,37 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/21 13:47:26 by nabbas            #+#    #+#             */
-/*   Updated: 2025/06/21 19:29:02 by nabbas           ###   ########.fr       */
+/*   Created: 2025/06/22 15:44:00 by nabbas            #+#    #+#             */
+/*   Updated: 2025/06/22 15:44:01 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-/* helper: check that v ∈ [1‥INT_MAX] */
-static bool valid(long v)
+static int	valid_int(int n)
 {
-    return (v > 0 && v <= INT_MAX);
+	return (n > 0 && n <= INT_MAX);
 }
 
-bool parse_args(int ac, char **av, t_rules *r)
+int	parse_args(int ac, char **av, t_rules *r)
 {
-    bool ok;
-    long t;
+	int	ok;
 
-    if (ac != 5 && ac != 6)
-        return (false);
-    ok = true;
-    t = ft_atoi_pos(av[1], &ok);
-    r->n_philo = (int)t;
-    r->t_die   = ft_atoi_pos(av[2], &ok);
-    r->t_eat   = ft_atoi_pos(av[3], &ok);
-    r->t_sleep = ft_atoi_pos(av[4], &ok);
-    r->must_eat = -1;
-    if (ac == 6)
-        r->must_eat = ft_atoi_pos(av[5], &ok);
-    if (!ok
-     || !valid(r->n_philo)
-     || !valid(r->t_die)
-     || !valid(r->t_eat)
-     || !valid(r->t_sleep)
-     || (ac == 6 && (!valid(r->must_eat) || r->must_eat == 0)))
-        return (false);
-    return (true);
+	if (ac != 5 && ac != 6)
+		return (0);
+	ok = 1;
+	r->n_philo = ft_atoi_pos(av[1], &ok);
+	r->t_die = ft_atoi_pos(av[2], &ok);
+	r->t_eat = ft_atoi_pos(av[3], &ok);
+	r->t_sleep = ft_atoi_pos(av[4], &ok);
+	r->must_eat = -1;
+	if (ac == 6)
+		r->must_eat = ft_atoi_pos(av[5], &ok);
+	if (!ok || !valid_int(r->n_philo) || !valid_int(r->t_die))
+		return (0);
+	if (!valid_int(r->t_eat) || !valid_int(r->t_sleep))
+		return (0);
+	if (ac == 6 && !valid_int(r->must_eat))
+		return (0);
+	return (1);
 }
-

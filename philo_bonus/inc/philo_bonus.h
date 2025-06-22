@@ -5,84 +5,90 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/21 17:48:13 by nabbas            #+#    #+#             */
-/*   Updated: 2025/06/21 19:28:25 by nabbas           ###   ########.fr       */
+/*   Created: 2025/06/22 15:50:15 by nabbas            #+#    #+#             */
+/*   Updated: 2025/06/22 15:53:00 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_BONUS_H
 # define PHILO_BONUS_H
 
-# include <pthread.h>
 # include <semaphore.h>
 # include <sys/time.h>
 # include <sys/wait.h>
+# include <pthread.h>
 # include <signal.h>
 # include <fcntl.h>
-# include <stdbool.h>
 # include <stdlib.h>
 # include <stdio.h>
 # include <unistd.h>
 # include <limits.h>
+# include <stdbool.h>
 
-/* ----------------------------------------------------------------- */
-/*  Core structs                                                     */
-/* ----------------------------------------------------------------- */
 typedef struct s_rules t_rules;
 
 typedef struct s_philo
 {
-    int       id;
-    long      last_meal;
-    int       meals;
-    pthread_t mon;
-    sem_t    *lock;      /* named semaphore per-philosopher */
-    t_rules  *rules;
-} t_philo;
+	int			id;
+	long		last_meal;
+	int			meals;
+	pid_t		pid;
+	pthread_t	mon;
+	t_rules		*rules;
+	sem_t		*lock;
+}	t_philo;
 
 struct s_rules
 {
-    int     n_philo;
-    int     t_die;
-    int     t_eat;
-    int     t_sleep;
-    int     must_eat;
-    long    start;
-    sem_t  *forks;
-    sem_t  *slots;
-    sem_t  *print;
-    sem_t  *stop;
-    int     stop_flag;   /* signaled on death */
-    t_philo *philos;
-    pid_t  *pids;
+	int		n_philo;
+	int		t_die;
+	int		t_eat;
+	int		t_sleep;
+	int		must_eat;
+	long	start;
+	int		stop_flag;
+
+	sem_t	*forks;
+	sem_t	*print;
+	sem_t	*stop;
+	sem_t	*slots;
+
+	t_philo	*philos;
+	pid_t	*pids;
 };
 
-/* ----------------------------------------------------------------- */
-/*  Prototypes                                                       */
-/* ----------------------------------------------------------------- */
-/* parsing / init */
-bool    parse_args(int ac, char **av, t_rules *r);
-bool    init_sim(t_rules *r);
+/* args_bonus.c */
+int		ft_atoi_pos(const char *s, int *ok);
+int		parse_args(int ac, char **av, t_rules *r);
 
-/* actions & routine */
-int     philo_life(t_philo *p);
-void    eat(t_philo *p);
-void    think(t_philo *p);
-void    sleep_philo(t_philo *p);
+/* time_bonus.c */
+long	get_time_ms(void);
+void	ft_usleep(long ms);
+void	smart_sleep(long ms, t_rules *r);
 
-/* monitor & parent */
-void   *monitor(void *arg);
-void    parent_watch(t_rules *r);
+/* utils_bonus.c */
+void	build_sem_name(char *dst, int idx);
 
-/* timing & helpers */
-long    get_time_ms(void);
-void    ft_usleep(long ms);
-int     ft_atoi_pos(const char *s, bool *ok);
-void    smart_sleep(long dur, t_rules *r);
-void    build_sem_name(char *dst, int idx);
+/* actions_bonus.c */
+void	eat(t_philo *p);
+void	sleep_philo(t_philo *p);
+void	think(t_philo *p);
 
-/* logging + cleanup */
-void    log_state(t_philo *p, const char *msg, bool death);
-void    free_all(t_rules *r);
+/* monitor_bonus.c */
+void	*monitor(void *arg);
+void	parent_watch(t_rules *r);
 
-#endif /* PHILO_BONUS_H */
+/* print_bonus.c */
+void	log_state(t_philo *p, char *msg, int death);
+
+/* cleanup_bonus.c */
+void	free_all(t_rules *r);
+
+/* routine_bonus.c */
+void	*routine(void *arg);
+
+/* init_bonus.c */
+bool	init_sim(t_rules *r);
+
+#endif
+

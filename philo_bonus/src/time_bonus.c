@@ -5,23 +5,46 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: nabbas <nabbas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/21 17:48:24 by nabbas            #+#    #+#             */
-/*   Updated: 2025/06/21 19:29:54 by nabbas           ###   ########.fr       */
+/*   Created: 2025/06/22 15:44:12 by nabbas            #+#    #+#             */
+/*   Updated: 2025/06/22 16:11:02 by nabbas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-long get_time_ms(void)
+long	get_time_ms(void)
 {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
-void ft_usleep(long ms)
+void	ft_usleep(long ms)
 {
-    long start = get_time_ms();
-    while (get_time_ms() - start < ms)
-        usleep(100);
+	long	start;
+
+	start = get_time_ms();
+	while (get_time_ms() - start < ms)
+		usleep(250); // tighter interval
 }
+
+
+void	smart_sleep(long dur, t_rules *r)
+{
+	long	start;
+
+	start = get_time_ms();
+	while (get_time_ms() - start < dur)
+	{
+		usleep(100);
+		sem_wait(r->stop);
+		if (r->stop_flag)
+		{
+			sem_post(r->stop);
+			break ;
+		}
+		sem_post(r->stop);
+	}
+}
+

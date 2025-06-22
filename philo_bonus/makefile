@@ -1,35 +1,29 @@
-# =============================================================================
-#  philo_bonus – Makefile (bonus part, named semaphores version)
-# =============================================================================
+NAME        = philo_bonus
+CC          = cc
+CFLAGS      = -Wall -Wextra -Werror
+THREADS     = -pthread
+INC         = -Iinc
+SRCDIR      = src
 
-NAME      := philo_bonus
-CC        := cc
-CFLAGS    := -Wall -Wextra -Werror
-THREADS   := -pthread
-INC       := -Iinc
-SRCDIR    := src
-HDRS      := inc/philo_bonus.h
+SRC         = $(SRCDIR)/args_bonus.c \
+              $(SRCDIR)/actions_bonus.c \
+              $(SRCDIR)/cleanup_bonus.c \
+              $(SRCDIR)/init_bonus.c \
+              $(SRCDIR)/main_bonus.c \
+              $(SRCDIR)/monitor_bonus.c \
+              $(SRCDIR)/routine_bonus.c \
+              $(SRCDIR)/time_bonus.c \
+              $(SRCDIR)/utils_bonus.c \
+              $(SRCDIR)/print_bonus.c
 
-SRC := \
-	$(SRCDIR)/args_bonus.c \
-	$(SRCDIR)/actions_bonus.c \
-	$(SRCDIR)/cleanup_bonus.c \
-	$(SRCDIR)/init_bonus.c \
-	$(SRCDIR)/main_bonus.c \
-	$(SRCDIR)/monitor_bonus.c \
-	$(SRCDIR)/routine_bonus.c \
-	$(SRCDIR)/time_bonus.c \
-	$(SRCDIR)/utils_bonus.c \
-	$(SRCDIR)/print_bonus.c
-
-OBJ := $(SRC:.c=.o)
+OBJ         = $(SRC:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJ) $(HDRS)
-	$(CC) $(CFLAGS) $(OBJ) $(THREADS) -o $@
+$(NAME): $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) $(THREADS) -o $(NAME)
 
-$(SRCDIR)/%.o: $(SRCDIR)/%.c $(HDRS)
+%.o: %.c
 	$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 clean:
